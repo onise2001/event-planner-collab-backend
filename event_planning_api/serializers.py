@@ -43,7 +43,7 @@ class RSVPSerializer(serializers.ModelSerializer):
     event = EventSerializer(read_only=True)
     event_id = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), write_only=True, source="event")
     user = CustomUserSerializer(read_only=True)
-    user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='user')
+    #user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='user')
     class Meta:
         model = RSVP
         fields = '__all__'
@@ -54,7 +54,7 @@ class InvitationSerializer(serializers.ModelSerializer):
     event = EventSerializer(read_only=True)
     event_id = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), write_only=True, source="event")
     host = CustomUserSerializer(read_only=True)
-    host_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='host')
+    #host_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='host')
     guest = CustomUserSerializer(read_only=True)
     guest_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='guest')
     

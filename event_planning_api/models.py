@@ -41,7 +41,25 @@ class RSVP(models.Model):
 
 
 class Invitation(models.Model):
-    evnet = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     host = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE, related_name='host')
     guest = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE, related_name='guest')
-    rsvp = models.ForeignKey(RSVP, on_delete=models.CASCADE)
+    rsvp = models.ForeignKey(RSVP, on_delete=models.CASCADE, null=True, blank=True)
+
+
+
+
+class EventInfo(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    host = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE)
+    number_of_invitations = models.IntegerField()
+    total_rsvps = models.IntegerField()
+    total_accepted_rsvps = models.IntegerField()
+    total_rejected_rsvps = models.IntegerField()
+    invitaion_accepted_rsvps = models.IntegerField()
+    invitation_rejected_rsvps = models.IntegerField()
+
+
+
+class Comment(models.Model):
+    text = models.TextField()
