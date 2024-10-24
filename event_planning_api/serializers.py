@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Privacy, Medium, Event, RSVP, Invitation
+from .models import Category, Privacy, Medium, Event, RSVP, Invitation, EventInfo
 from users.serializers import CustomUserSerializer
 from users.models import CustomUser
 
@@ -37,6 +37,16 @@ class EventSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     
+    
+    def create(self,validated_data):
+            new_event = Event.objects.create(**validated_data)
+            if new_event:
+                event_info = EventInfo.objects.create(event=new_event,host=new_event.organizer)
+                event_info.save()
+            new_event.save()
+            return new_event
+
+    
 
 
 class RSVPSerializer(serializers.ModelSerializer):
@@ -57,9 +67,18 @@ class InvitationSerializer(serializers.ModelSerializer):
     #host_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='host')
     guest = CustomUserSerializer(read_only=True)
     guest_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='guest')
+    rsvp = RSVPSerializer(read_only=True)
     
     class Meta:
         model = Invitation
         fields = '__all__'
 
 
+
+
+class EventInfoSerializer(serializers.ModelSerializer):
+    event = EventSerializer(read_only=True)
+    host  = CustomUserSerializer(read_only=True)
+    class Meta:
+        model = EventInfo
+        fields = '__all__'

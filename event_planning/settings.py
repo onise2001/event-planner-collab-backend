@@ -27,9 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+
 
 
 # Application definition
@@ -44,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'event_planning_api',
-    'corsheaders'
+    'corsheaders',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -134,11 +137,36 @@ USE_I18N = True
 
 USE_TZ = True
 
+STORAGES = {
+    "default": {
+        "BACKEND" : "storages.backends.s3boto3.S3Boto3Storage"
+    },
+   
+    'staticfiles' :{ 
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage"
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME =  os.getenv('AWS_S3_REGION_NAME')
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+
+AWS_STATIC_LOCATION = 'event-planner-static'
+AWS_MEDIA_LOCATION = 'event-planner-media'
+
+
+
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/event-planner-static/'
+
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/event-planner-media/'
+#STATIC_ROOT = os.path.join(BASE_DIR, '/staticfiles/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
