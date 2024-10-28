@@ -8,6 +8,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    networks:
+      - shared
+
   web:
     build: .
     command: gunicorn --config gunicorn_config.py event_planning.wsgi:application
@@ -20,5 +23,12 @@ services:
 
     depends_on:
       - db
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true
+
 volumes:
   postgres_data:
