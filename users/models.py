@@ -18,6 +18,7 @@ class CustomUserManage(BaseUserManager):
 
 class CustomUser(AbstractUser):
     username = None
+    name = models.TextField()
     email = models.EmailField(unique=True)
     profilePicture = models.ImageField
 

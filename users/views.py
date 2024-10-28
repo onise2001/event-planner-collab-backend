@@ -4,6 +4,7 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
 # Create your views here.
@@ -21,3 +22,14 @@ class CustomUserViewSet(GenericViewSet):
             return Response(data=serializer.data, status=status.HTTP_201_CREATED )
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def list(self,request):
+        serializer = self.serializer_class(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            permission_classes = [IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
