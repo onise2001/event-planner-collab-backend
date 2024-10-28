@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           script: |
-            cd ecommerce-collab-backend
+            cd event-planner-collab-backen
             docker compose down
             git pull origin main
             docker compose up --detach
