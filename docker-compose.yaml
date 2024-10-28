@@ -11,16 +11,16 @@ services:
     networks:
       - shared
 
-  web:
+  event-web:
     build: .
     command: gunicorn --config gunicorn_config.py event_planning.wsgi:application
     volumes:
       - .:/app
-    ports:
-      - 8001:8001
+
     env_file:
       - .env
-
+    expose:
+      - 8001
     depends_on:
       - db
     networks:
