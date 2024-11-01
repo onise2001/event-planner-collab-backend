@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'users',
     'event_planning_api',
     'corsheaders',
-    'storages'
+    'storages',
+    'django_extensions',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -96,23 +98,40 @@ TEMPLATES = [
 WSGI_APPLICATION = 'event_planning.wsgi.application'
 
 
+CELERY_BEAT_SCHEDULE = {
+    'send-event-reminders-every-minute': {
+        'task': 'event_planning_api.tasks.send_event_notifications',
+        'schedule': timedelta(minutes=1),  
+    },
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+# CELERY_BEAT_SCHEDULE = {
+#     'check_events_every_10_minutes': {
+#         'task': 'event_planning_api.tasks.send_event_notifications',
+#         'schedule': 60.0,  
+#     },
+# }
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-
-        'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'db',
-        'PORT': '5432',
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+    #     'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.getenv('POSTGRES_DB'),
+    #     'USER': os.getenv('POSTGRES_USER'),
+    #     'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+    #     'HOST': 'db',
+    #     'PORT': '5432',
+    # }
 }
 
 

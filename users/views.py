@@ -5,6 +5,8 @@ from .serializers import CustomUserSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework import filters
+from rest_framework.generics import ListAPIView
 
 
 # Create your views here.
@@ -13,6 +15,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 class CustomUserViewSet(GenericViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
+    
+    
 
 
     def create(self, request):
@@ -28,8 +32,16 @@ class CustomUserViewSet(GenericViewSet):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
 
-    def get_permissions(self):
-        if self.action in ['list','retrieve']:
-            permission_classes = [IsAuthenticated]
+    # def get_permissions(self):
+    #     if self.action in ['list','retrieve']:
+    #         permission_classes = [IsAuthenticated]
 
-        return [permission() for permission in permission_classes]
+    #     return [permission() for permission in permission_classes]
+
+
+
+class SearchUsersView(ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'email']

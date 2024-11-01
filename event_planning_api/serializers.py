@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Privacy, Medium, Event, RSVP, Invitation, EventInfo
+from .models import Category, FileUpload, Privacy, Medium, Event, RSVP, Invitation, EventInfo, Comment, Notification
 from users.serializers import CustomUserSerializer
 from users.models import CustomUser
 
@@ -19,6 +19,14 @@ class MediumSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SimpleInvitationSerializer(serializers.ModelSerializer):
+    guest_id = serializers.PrimaryKeyRelatedField(read_only=True, source='guest')
+
+    class Meta:
+        model = Invitation
+        fields = ['id', 'guest_id']
+
+
 
 class EventSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -32,6 +40,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     organizer = CustomUserSerializer(read_only=True)
     #organizer_id =serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='organizer')
+    invitations = SimpleInvitationSerializer(many=True, read_only=True)
     class Meta:
         model = Event
         fields = '__all__'
@@ -81,4 +90,41 @@ class EventInfoSerializer(serializers.ModelSerializer):
     host  = CustomUserSerializer(read_only=True)
     class Meta:
         model = EventInfo
+        fields = '__all__'
+
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    event = EventSerializer(read_only=True)
+    event_id = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), write_only=True, source='event')
+    class Meta:
+        model = FileUpload
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    #event = EventSerializer(read_only=True, )
+    event_id = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), source='event')
+    user = CustomUserSerializer(read_only=True)
+    # user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), write_only=True, source='user')
+    class Meta:
+        model = Comment
+        fields = ['id','text', 'user','event_id']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['event_id'] = instance.event.id  # Keep only the event ID in output
+        return representation
+    
+
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    sender = CustomUserSerializer(read_only=True)
+    receiver = CustomUserSerializer(read_only=True)
+    invitation = InvitationSerializer(read_only=True)
+    rsvp =  RSVPSerializer(read_only=True)
+
+    class Meta:
+        model = Notification
         fields = '__all__'

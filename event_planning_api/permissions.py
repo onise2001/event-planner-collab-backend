@@ -7,3 +7,4 @@ class IsOrganizer(BasePermission):
             if obj.organizer == request.user:
                 return True
         return False
+    

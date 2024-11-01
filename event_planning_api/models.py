@@ -31,6 +31,7 @@ class Event(models.Model):
     image = models.ImageField()
     members = models.IntegerField(default=0)
     maxParticipants = models.IntegerField()
+    conditions = models.TextField(blank=True, null=True)
     
 
 
@@ -41,7 +42,7 @@ class RSVP(models.Model):
 
 
 class Invitation(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='invitations')
     host = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE, related_name='host')
     guest = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE, related_name='guest')
     rsvp = models.ForeignKey(RSVP, on_delete=models.CASCADE, null=True, blank=True)
@@ -62,5 +63,23 @@ class EventInfo(models.Model):
 
 
 class Comment(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(to="users.CustomUser", on_delete=models.CASCADE)
     text = models.TextField(blank=True,null=True)
+
+
+class FileUpload(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_files')
     file = models.FileField(blank=True, null=True)
+
+
+class Notification(models.Model):
+    TYPE_CHOICES = (('invitation', 'invitation'),( 'notification', 'notification'))
+
+    type = models.CharField(max_length=100, choices=TYPE_CHOICES, default='invitation')
+    invitation = models.ForeignKey(Invitation, on_delete=models.CASCADE,blank=True, null=True)
+    rsvp = models.ForeignKey(RSVP, on_delete=models.CASCADE,blank=True, null=True)
+    sender = models.ForeignKey(to="users.CustomUser", on_delete=models.CASCADE,related_name='sender', blank=True, null=True)
+    receiver = models.ForeignKey(to='users.CustomUser', on_delete=models.CASCADE, related_name="receiver", blank=True, null=True)
+    message = models.TextField(blank=True,null=True)
+    
